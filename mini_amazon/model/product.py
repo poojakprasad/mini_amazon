@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 import re
+from bson.objectid import ObjectId
 
 class Product :
     def __init__(self,name,description,price):
@@ -9,9 +10,10 @@ class Product :
 
 class MongoProduct :
 
+
     def __init__(self):
         client = MongoClient('localhost', 27017)
-        db = client.amazon
+        self.db = client.amazon
 
 
 
@@ -28,14 +30,14 @@ class MongoProduct :
         matches = []
         for prods in matching_prods:
             matches.append(prods)
-         return  matches
+        return  matches
 
 
-    def delete_by_id(self,_id):
-        self.db.products.delete_one({'_id': _id})
 
+    def delete_by_id(self, _id):
+        self.db.products.delete_one({'_id': ObjectId(_id)})
 
     def update_by_id(self,_id,updated_product):
         condition = dict()
-        condition['_id'] = _id
-        self.db.products.update_one(filter=condition, update={'$set': prod})
+        condition['_id'] = ObjectId(_id)
+        self.db.products.update_one(filter=condition, update={'$set': updated_product})

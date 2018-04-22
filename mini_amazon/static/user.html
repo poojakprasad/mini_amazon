@@ -1,0 +1,35 @@
+<h1>Welcome to Mini Amazon</h1>
+
+<form action="/api/users" method="post">
+    <input type="text" name="op_type" value="insert" hidden><br>
+    Name:<br>
+    <input type="text" name="name" required><br>
+    Description:<br>
+    <input type="text" name="user_name" required><br>
+    Price:<br>
+    <input type="text" name="password" required><br>
+    <input type="submit">
+</form>
+
+<h1>Delete Amazon</h1>
+<form action="/api/users" method="post">
+    <input type="text" name="op_type" value="delete" hidden><br>
+    _id:<br>
+    <input type="text" name="_id" required><br/>
+
+    <input type="submit" name="delete">
+</form>
+
+<h1>Update Amazon</h1>
+<form action="/api/users" method="post">
+    <input type="text" name="op_type" value="update" hidden><br>
+    _id:<br>
+    <input type="text" name="_id" ><br>
+    Name:<br>
+    <input type="text" name="name" ><br>
+    Description:<br>
+    <input type="text" name="user_name" ><br>
+    Price:<br>
+    <input type="text" name="password" ><br>
+    <input type="submit">
+</form>
