@@ -33,9 +33,9 @@ class MongoProduct :
         return  matches
 
 
-
     def delete_by_id(self, _id):
         self.db.products.delete_one({'_id': ObjectId(_id)})
+
 
     def update_by_id(self,_id,updated_product):
         condition = dict()

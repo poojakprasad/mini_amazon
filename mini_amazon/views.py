@@ -1,11 +1,11 @@
-from flask import send_from_directory
+from flask import render_template
 from mini_amazon import app
 
 
 @app.route('/', methods=['GET'])
 def index():
     #print('abc')
-    return send_from_directory('./static', 'index.html')
+    return render_template('index.html')
 
 
 

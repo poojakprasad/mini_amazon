@@ -2,7 +2,7 @@ from mini_amazon.model.product import MongoProduct
 from mini_amazon.model.user import MongoUser
 
 from mini_amazon import app
-from flask import request, Response , render_template
+from flask import request, Response , render_template,send_from_directory
 
 mongo_product = MongoProduct()
 mongo_user = MongoUser()
@@ -66,54 +66,48 @@ def products():
             return Response(str({'status': 'updated'}), mimetype='application/json', status=200)
 
 
-@app.route('/api/users', methods=['POST', 'GET', 'DELETE'])
-def users():
-    if request.method == 'GET':
-        matches = mongo_user.search_by_name(request.args['name'])
-        return Response(str(matches), mimetype='application/json', status=200)
 
-        query = {
-            'name': re.compile(request.args['name'], re.IGNORECASE)
-        }
-        matching_users = db.users.find(query)
-        matches = []
-        for users in matching_users:
-            matches.append(users)
-        return Response(str(matches), mimetype='application/json', status=200)
+@app.route('/api/user', methods=['POST'])
+def user():
+    if request.form['op_type'] == "login" :
+        username = request.form.get('username')
+        password = request.form.get('password')
 
-    elif request.method == 'POST':
-        if request.form['op_type'] == 'insert':
+        is_valid = mongo_user.authenticate(username,password)
 
-            user = dict()
-            user['name'] = request.form['name']
-            user['user_name'] = request.form['user_name']
-            user['password'] = request.form['password']
+        if is_valid :
+            name = mongo_user.get_name_by_username(username)
+            return render_template('profile.html',name= name,login_msg = "Welcome")
+        else :
+            return render_template('index.html',message = "Invalid username/passsword")
+
+
+    elif request.form['op_type'] == "signup" :
+        user = dict()
+
+        user['username'] = request.form.get('username')
+        user['name'] = request.form.get('name')
+        user['email']= request.form.get('email')
+        user['password'] = request.form.get('password')
+        user['cart'] = []
+
+        does_exist = mongo_user.check_for_user_exist(request.form.get('username'))
+
+        if does_exist:
+            return render_template('index.html', user_exist_msg="Username exists, please enter a different username")
+        else:
             mongo_user.save(user)
-            # db.users.insert_one(user)
+            return Response(str({"status": "user added"}), mimetype='application/json', status=200)
 
-            return Response(str({'status': 'success'}), mimetype='application/json', status=200)
+    else :
+        return Response(str({"status" : "Invalid operation"}), mimetype='application/json', status=400)
 
-        elif request.form['op_type'] == 'delete':
-            id = request.form['_id']
+@app.route('/api/cart', methods=['POST'])
+def cart():
+    user_id = request.form.get('user_id',None)
+    product_id = request.form.get('product_id', None)
 
-            mongo_user.delete(id)
-            return Response(str({'status': 'success'}), mimetype='application/json', status=200)
+    success = mongo_user.add_to_cart(user_id,product_id)
+    user_data = mongo_user.get_by_id(user_id)
 
-        elif request.form['op_type'] == 'update':
-            condition = dict()
-            _id = request.form['_id']
-
-            updated_user = dict()
-            if request.form['name'] != '':
-                updated_user['name'] = request.form['name']
-
-            if request.form['user_name'] != '':
-                updated_user['user_name'] = request.form['user_name']
-
-            if request.form['password'] != '':
-                updated_user['password'] = request.form['password']
-
-            # db.users.update_one(filter=condition, update = {'$set': user})
-            mongo_user.update_by_id(_id, updated_user)
-
-            return Response(str({'status': 'updated'}), mimetype='application/json', status=200)
+    return render_template('profile.html',name=user_data['name'],user_id=user_data['user_id'])
