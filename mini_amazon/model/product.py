@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 import re
 from bson.objectid import ObjectId
+import json
 
 class Product :
     def __init__(self,name,description,price):
@@ -12,8 +13,9 @@ class MongoProduct :
 
 
     def __init__(self):
-        client = MongoClient('localhost', 27017)
-        self.db = client.amazon
+        config = json.load(open('./config.json', 'r'))
+        client = MongoClient(config['mongo_host'], config['mongo_port'])
+        self.db = client[config['mongo_db_name']]
 
 
 

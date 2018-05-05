@@ -19,9 +19,11 @@
     <div class="list-group">
         <
         {%for result in results %}
-        <a href="#" class="list-group-item">{{result.name}}<a
+        <a href="#" class="list-group-item">{{result.name}}
+            <a
                 href="/api/cart?user_id={{user_id}}&product_id={{result._id}}&op_type=delete"
                 class="display:block">Remove</a></a>
+        {{result.price}}
         {% endfor %}
 
         <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
