@@ -56,6 +56,6 @@ class MongoProduct :
             product = dict()
             product['name'] = "name" + str(i)
             product['description'] = "description" + str(i)
-            product['price'] = "price" + str(i)
+            product['price'] = "10" + str(i)
             self.db.products.insert_one(product)
 
