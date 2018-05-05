@@ -13,15 +13,31 @@
     <title>Cart</title>
 </head>
 <body>
-<b>User {{ user_name }}'s cart:</b>
+    <b>User {{ user_name }}'s cart:</b>
 
 
+    <div class="list-group">
+        <
+        {%for result in results %}
+        <a href="#" class="list-group-item">{{result.name}}<a
+                href="/api/cart?user_id={{user_id}}&product_id={{result._id}}&op_type=delete"
+                class="display:block">Remove</a></a>
+        {% endfor %}
 
-                   <div class="list-group">
-                       {%for result in results %}
-                        <a href="#" class="list-group-item">{{result.name}}<a href="/api/cart?user_id={{user_id}}&product_id={{result._id}}&op_type=delete"  class="display:block">Remove</a></a>
-                        {% endfor %}
-                    </div>
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+            <input type="hidden" name="business" value="pooja.prasad66@gmail.com"><br>
+            <input type="hidden" name="cmd" value="_cart">
+            <input type="hidden" name="upload" value="1">
+            <input type="hidden" name="currency_code" value="INR">
+
+            {%for product in results %}
+            <input type="hidden" name='{{ "item_name_" ~ loop.index }}' value="{{ product.name }}">
+            <input type="hidden" name='{{ "amount_" ~ loop.index }}' value="{{ product.price }}">
+            {% endfor %}
+
+            <button type="submit">Check out with PayPal</button>
+        </form>
+    </div>
 
 
 </body>
