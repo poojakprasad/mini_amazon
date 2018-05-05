@@ -51,3 +51,11 @@ class MongoProduct :
                 matches.append(self.db.products.find_one({'_id': ObjectId(matched_id)}))
         return matches
 
+    def add_stuff(self):
+        for i in range(10):
+            product = dict()
+            product['name'] = "name" + str(i)
+            product['description'] = "description" + str(i)
+            product['price'] = "price" + str(i)
+            self.db.products.insert_one(product)
+

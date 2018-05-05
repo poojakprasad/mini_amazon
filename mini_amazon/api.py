@@ -133,3 +133,8 @@ def get_all_cart_objects():
     matched_ids = mongo_user.get_usercart_by_userid(userId)
     matches = mongo_product.get_product_list_from_product_ids(matched_ids)
     return render_template('cart.html', user_id=userId, results=matches)
+
+@app.route('/addStuff', methods=['GET'])
+def add_stuff():
+   mongo_product.add_stuff()
+   return Response(str({'status': 'success'}), mimetype='application/json', status=200)
