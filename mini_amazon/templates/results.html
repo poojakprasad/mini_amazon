@@ -14,18 +14,35 @@
 
 </head>
 <body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Mini Amazon</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+        <li>
+        <form method="POST" action="/api/cart">
+            <input type="text" name="user_id" value="{{user_id}}" hidden>
+            <input type="text" name="op_type" value="getcart" hidden><br><br>
+            <button type="submit" class="nav-link" value="show cart">Show cart</button>
+        </form>
+        </li>
+    </ul>
+
+  </div>
+</nav>
+
     {%for result in results %}
         <div  class="panel panel-primary" style="width:300px; float:left; margin-right:10px">
 
             <h3>{{result.name}}</h3><br>
             <b>Description : {{result.description}}</b><br>
             <b>price : {{result.price}}</b>
-            <form action="/api/cart" method="POST">
-                <input type="text" name="user_id" value="{{user_id}}" hidden><br>
-                <input type="text" name="product_id" value="{{product._id}}" hidden><br/>
-                <input type="submit" value="delete">
-            </form>
 
+        <div hidden>
             <form action="/api/products" method="POST">
                 <input type="text" name="op_type" value="update" hidden><br>
                 <input type="text" name="_id" value= "{{result._id}}" hidden><br>
@@ -35,9 +52,10 @@
                 <input type="text" name="description" ><br>
                 Updated Price:<br>
                 <input type="text" name="price" ><br>
-                <input type="submit" value="update"><br>
+                <input type="submit" value="update" hidden><br>
             </form>
 
+        </div>
             <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
                 <input type="hidden" name="business" value="pooja.prasad66@gmail.com"><br>
                 <input type="hidden" name="cmd" value="_xclick">
@@ -51,6 +69,11 @@
                 src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" ><br>
             </form>
 
+            <form action="/api/cart" method="POST">
+                <input type="text" name="user_id" value="{{user_id}}" hidden><br>
+                <input type="text" name="product_id" value="{{result._id}}" hidden><br/>
+                <input type="submit" value="add to cart" >
+            </form>
 
         </div>
     {% endfor %}

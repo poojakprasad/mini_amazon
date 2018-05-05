@@ -41,3 +41,11 @@ class MongoProduct :
         condition = dict()
         condition['_id'] = ObjectId(_id)
         self.db.products.update_one(filter=condition, update={'$set': updated_product})
+
+    def get_product_list_from_product_ids(self, matched_ids):
+        matches = []
+        if(matched_ids is not None):
+            for matched_id in matched_ids:
+                matches.append(self.db.products.find_one({'_id': ObjectId(matched_id)}))
+        return matches
+

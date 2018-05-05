@@ -67,7 +67,7 @@ class MongoUser :
     def add_to_cart(self,user_id,product_id):
         condition = {'_id' : ObjectId(user_id)}
         cursor = self.db.users.find(condition)
-        user_data = cursor[0] if cursor.count > 0 else None
+        user_data = cursor[0] if cursor.count() > 0 else None
         if user_data is None :
             return False
 
@@ -87,3 +87,28 @@ class MongoUser :
         user = cursor[0] if cursor.count() > 0 else None
         return user
 
+    def get_id_by_username(self, username):
+        cursor = self.db.users.find({'username': username})
+        user_data = cursor[0] if cursor.count() > 0 else None
+        if user_data is None:
+            return "Anonymous"
+        else:
+            matches = []
+            for user in cursor:
+                matches.append(user)
+            return matches[0]['_id']
+
+    def get_usercart_by_userid(self,user_id):
+        user = self.get_by_id(user_id)
+        return user['cart'] if user is not None else None
+
+
+    def remove_prod_from_cart(self,user_id,product_id):
+        try:
+            condition = {'_id': ObjectId(user_id)}
+            user = self.db.users.find_one({'_id': ObjectId(user_id)})
+            cart = user['cart']
+            cart.remove(ObjectId(product_id))
+            self.db.users.update_one(filter=condition, update={'$set':{'cart':cart}})
+        except:
+            pass

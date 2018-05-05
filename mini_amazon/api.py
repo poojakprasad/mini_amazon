@@ -16,13 +16,14 @@ def health():
 def products():
     if request.method == 'GET':
         query = request.args['name']
+        userId = request.args['user_id']
         matches = mongo_product.search_by_name(query)
         #print("1")
 
         output_type = request.args.get('output_type', None)
         if output_type == 'html':
             #print("2")
-            return render_template('results.html', query=query, results=matches)
+            return render_template('results.html', query=query, results=matches, user_id=userId)
         else :
             return Response(str(matches), mimetype='application/json', status=200)
 
@@ -77,7 +78,8 @@ def user():
 
         if is_valid :
             name = mongo_user.get_name_by_username(username)
-            return render_template('profile.html',name= name,login_msg = "Welcome")
+            userId = mongo_user.get_id_by_username(username)
+            return render_template('profile.html',name= name,login_msg = "Welcome", user_id=userId)
         else :
             return render_template('index.html',message = "Invalid username/passsword")
 
@@ -102,12 +104,32 @@ def user():
     else :
         return Response(str({"status" : "Invalid operation"}), mimetype='application/json', status=400)
 
-@app.route('/api/cart', methods=['POST'])
+@app.route('/api/cart', methods=['POST','GET'])
 def cart():
-    user_id = request.form.get('user_id',None)
-    product_id = request.form.get('product_id', None)
+    if request.form.get('op_type') == 'getcart':
+        return get_all_cart_objects()
 
-    success = mongo_user.add_to_cart(user_id,product_id)
-    user_data = mongo_user.get_by_id(user_id)
+    elif request.args.get('op_type') == 'delete':
+        userId = request.args.get('user_id')
+        productId = request.args.get('product_id')
+        matches = mongo_user.remove_prod_from_cart(userId, productId)
+        return get_all_cart_objects()
 
-    return render_template('profile.html',name=user_data['name'],user_id=user_data['user_id'])
+    else:
+        user_id = request.form.get('user_id',None)
+        product_id = request.form.get('product_id', None)
+
+        user= mongo_user.get_by_id(user_id)
+        success = mongo_user.add_to_cart(user_id,product_id)
+        user_data = mongo_user.get_by_id(user_id)
+
+        return render_template('profile.html',name=user_data['name'],user_id=user_id)
+
+
+def get_all_cart_objects():
+    userId = request.args.get('user_id')
+    if(userId is None):
+        userId = request.form.get('user_id')
+    matched_ids = mongo_user.get_usercart_by_userid(userId)
+    matches = mongo_product.get_product_list_from_product_ids(matched_ids)
+    return render_template('cart.html', user_id=userId, results=matches)

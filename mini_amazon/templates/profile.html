@@ -1,9 +1,10 @@
-<h1>{{login_msg}},  {{name}}</h1>
+<h1 align="center">{{login_msg}}</h1>
+<h3 align="center">{{name}}! Please enter a product name to search...</h3>
 
-<form action="/api/products" method="GET">
+<form action="/api/products" method="GET" align="center">
     <input type="text" name="user_id" value="{{user_id}}" hidden>
     <input type="text" name="output_type" value="html" hidden>
-    Name:<br>
-    <input type="text" name="name" required><br>
+    Product Name:
+    <input type="text" name="name" required><br><br>
     <input type="submit">
 </form>
